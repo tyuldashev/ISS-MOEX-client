@@ -7,7 +7,7 @@
 
 ## Архитектура приложения
 
-![Архитектура](assets/moex_app_architecture.png)
+![Архитектура](assets/readme_pics/moex_app_architecture.png)
 
 ## Зависимости и установка
 
