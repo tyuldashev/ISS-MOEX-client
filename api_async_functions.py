@@ -4,6 +4,7 @@ import aiomoex
 from constants import PERS
 from tf import change_tf
 import aiohttp
+import os
 
 
 async def get_history_intervals(sec_id, board, market, engine):
@@ -179,6 +180,9 @@ def make_file(data, tf, us: dict, market):
 
     # 0 и 1 - имя файла и тип
     csv_file_path = f"Users_Files/{us['file_name']}.{us['file_type']}"
+    directory = os.path.dirname(csv_file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
     # 2 - имя контракта (для заполнения TICKER в первой колонке файла, будет формироваться сайтом)
     ticker = us['contract_name']

@@ -1,4 +1,3 @@
-# from DB import MySQLDatabase
 import pandas as pd
 from constants import ENGINE_STR, CONNECT_ARGS
 from datetime import datetime
@@ -21,31 +20,6 @@ def load_table(table, df):
     Это Update произвольных таблиц данными из полученного pandas dataframe, включая основные таблицы с MOEX:
     engines, markets, boards, boardgroups, durations, securitytypes, securitygroups, securitycollections.
     """
-
-    # Формируем список столбцов таблицы
-    columns = df.columns.tolist()
-    column_placeholders = ', '.join([f":{col}" for col in columns])
-    query_arq = ', '.join([f"`{col}` = VALUES(`{col}`)" for col in columns])
-    query = (f"INSERT INTO `{table}` "
-             f"({', '.join([f'`{col}`' for col in columns])}) "
-             f"VALUES ({column_placeholders}) "
-             f"ON DUPLICATE KEY UPDATE {query_arq}")
-    df_to_dict = df.to_dict(orient='records')
-
-    try:
-        with MySQLDatabase() as db:
-            for record in df_to_dict:
-                db.execute(query, record)
-
-    except Exception as e:
-        print(f"Error: {e}")
-
-
-def load_table_new(table, df):
-    """
-    Это Update произвольных таблиц данными из полученного pandas dataframe, включая основные таблицы с MOEX:
-    engines, markets, boards, boardgroups, durations, securitytypes, securitygroups, securitycollections.
-    """
     # Формируем список столбцов таблицы
     columns = df.columns.tolist()
     column_placeholders = ', '.join([f":{col}" for col in columns])
@@ -61,19 +35,6 @@ def load_table_new(table, df):
         with MySQLDatabase() as db:
             db.execute(query, df_to_dict)
 
-    except Exception as e:
-        print(f"Error: {e}")
-
-
-def copy_tables(source_table, destination_table):
-    """Копирование таблиц с одинаковой структурой и пустой destination_table"""
-    try:
-        with MySQLDatabase() as db:
-            query = f"INSERT INTO {destination_table} SELECT * FROM {source_table};"
-            result = db.execute(query)
-            if result:
-                print(f"Поздравляю. {result.rowcount} строк скопировано из Таблицы {source_table} в Таблицу "
-                      f"{destination_table}.")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -117,34 +78,28 @@ def make_table_for_app(main_tbl, new_tbl):  # main_table_search в БД
 
 
 def load_all_sec(df):
-    """Последовательность:
-        1. Очищаем last_arrival и записываем в него данные из df
-        2. Проверяем
-        3. Копируем main_table в main_table_copy, предварительно очищенную
-        4. Записываем в main_table данные из df, перезаписывая строки с уникальными ключами
-        5. Очищаем и пересоздаем таблицы main_table_search, которую App загружает в df
     """
-    # Шаг 1.
+    Обновляем таблицу last_arrival новыми данными. Если все ок, тоже делаем с main_table.
+    Если все ок, обновляем таблицу main_table_search, она нужна для поиска инструментов в окне приложения.
+    """
+
     print(f"Вошли в процедуру обновления основной таблицы main_table, {datetime.now()}")
     print(f"Очищаем таблицу 'last_arrival'")
     clear_table('last_arrival')
 
     print(f"Заливаем в таблицу 'last_arrival' данные, полученные с Биржи, {datetime.now()}")
-    load_table_new('last_arrival', df)
+    load_table('last_arrival', df)
 
-    # print(f"Очищаем таблицу 'main_table_copy'. {datetime.now()}")
-    # self.clear_table('main_table_copy')
-    # print(f"Делаем копию 'main_table' в 'main_table_copy' на всякий пожарный.")
-    # self.copy_tables('main_table','main_table_copy')
-    # Шаг 4.
     print(f"Заливаем в таблицу 'main_table' данные, полученные с Биржи, {datetime.now()}")
-    load_table_new('main_table', df)
-    # Шаг 5.
+    load_table('main_table', df)
+
     print(f"Очищаем таблицу 'main_table_search' {datetime.now()}")
     clear_table('main_table_search')
-    print(f"Перезаполняем таблицу 'main_table_search', {datetime.now()}")
+
+    print(f"Заполняем таблицу 'main_table_search', {datetime.now()}")
     make_table_for_app('main_table', 'main_table_search')
-    print(f'Процесс обновления main_table завершен, {datetime.now()}')
+
+    print(f'Процесс обновления таблиц завершен, {datetime.now()}')
 
 
 def get_security_attributes(sec_id):
@@ -248,12 +203,6 @@ class MySQLDatabase:
     def __exit__(self, exc_type, exc_value, traceback):
         self.disconnect()
 
-# pd.set_option('display.max_columns', None)
-# pd.set_option('display.max_rows', None)
-# pd.set_option('display.width', None)
-# print(filtered_df.head(30), '\n')
-# # print(result_df.tail(), '\n')
-# filtered_df.info()
 
 # test = get_start_df('SiH', ['stock_shares', 'stock_foreign_shares', 'stock_bonds', 'stock_eurobond', 'futures_forts'])
 # test = get_security_attributes('SiL3')
@@ -261,30 +210,11 @@ class MySQLDatabase:
 # print(test)
 
 # clear_table('main_table_search')
-# copy_tables('main_table', 'main_table_copy')
 # make_table_for_app('main_table', "main_table_search")
 
 
 # Тестовый df для имитации ответа биржи из функции get_all_securities()
-# df = pd.DataFrame({
-#             'id': [421883997],
-#             'secid': ['RN38500BQ3'],
-#             'shortname': ['ROSN-6.23M170523PA38500'],
-#             'regnumber': [None],
-#             'name': ['Марж. амер. Put 38500 с исп. 17 мая на фьюч. контр. ROSN-6.23'],
-#             'isin': [None],
-#             'is_traded': [0.0],
-#             'emitent_id': [None],
-#             'emitent_title': [None],
-#             'emitent_inn': [None],
-#             'emitent_okpo': [None],
-#             'gosreg': [None],
-#             'type': ['option'],
-#             'group': ['futures_options'],
-#             'primary_boardid': ['ROPD'],
-#             'marketprice_boardid': [None]
-#         })
-#
+
 # df = pd.DataFrame({
 #     'id': [421883997, 421883998, 421883999, 421884000, 421884001],
 #     'secid': ['RN38500BQ3', 'RN38501BQ3', 'RN38502BQ3', 'RN38503BQ3', 'RN38504BQ3'],
@@ -308,5 +238,6 @@ class MySQLDatabase:
 #     'primary_boardid': ['ROPD', 'ROPD', 'ROPD', 'ROPD', 'ROPD'],
 #     'marketprice_boardid': [None, None, None, None, None]
 # })
-# load_table_new('last_arrival_copy', df)
+
+# load_table('last_arrival_copy', df)
 # clear_table('last_arrival')
