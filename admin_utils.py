@@ -52,7 +52,7 @@ async def get_all_securities():
         start=600000 - стартовая позиция, взята с потолка для примера.
         """
         request_url = "https://iss.moex.com/iss/securities.json"
-        arguments = None  # {"securities.columns": ("SECID," "REGNUMBER," "LOTSIZE," "SHORTNAME")}
+        arguments = None
         iss = aiomoex.ISSClient(session, request_url, arguments)
         data = await iss.get_all()
         df = pd.DataFrame(data["securities"])
@@ -65,18 +65,18 @@ async def get_all_securities():
     load_all_sec(df)
 
 
-#  Если работаем в винде - раскомментируй это:
+# !!! Если работаем в Windows - раскомментируйте это тоже:
 # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 #  1. Запуск функции для загрузки Справочников MOEX. Примеры:
 # Справочники MOEX: engines, markets, boards, boardgroups, durations,
 # securitytypes, securitygroups, securitycollections.
+
 # asyncio.run(get_catalogs()) # все справочники разом
-# asyncio.run(get_catalogs(['markets']))
-# asyncio.run(get_catalogs(["engines", "markets", "boards", "boardgroups"]))
 
 #  2. Запуск функции для загрузки всех бумаг с MOEX. Запускаем только после загрузки всех справочников по п.1,
-# т.к. они нужны для создания одной из таблиц БД. Занимает от 2 до 4 часов.
+# т.к. они нужны для создания одной из таблиц БД. Занимает от 2 до 4 часов
+
 # asyncio.run(get_all_securities())
 
 

@@ -212,7 +212,6 @@ class MySQLDatabase:
 # clear_table('main_table_search')
 # make_table_for_app('main_table', "main_table_search")
 
-
 # Тестовый df для имитации ответа биржи из функции get_all_securities()
 
 # df = pd.DataFrame({

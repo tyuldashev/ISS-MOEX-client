@@ -131,30 +131,6 @@ CREATE TABLE IF NOT EXISTS `main_table` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table moex_db.main_table_copy
-CREATE TABLE IF NOT EXISTS `main_table_copy` (
-  `id` bigint NOT NULL,
-  `secid` varchar(51) NOT NULL,
-  `shortname` varchar(189) DEFAULT NULL,
-  `regnumber` varchar(189) DEFAULT NULL,
-  `name` varchar(765) DEFAULT NULL,
-  `isin` varchar(51) DEFAULT NULL,
-  `is_traded` int DEFAULT NULL,
-  `emitent_id` int DEFAULT NULL,
-  `emitent_title` varchar(765) DEFAULT NULL,
-  `emitent_inn` varchar(30) DEFAULT NULL,
-  `emitent_okpo` varchar(24) DEFAULT NULL,
-  `gosreg` varchar(189) DEFAULT NULL,
-  `type` varchar(93) DEFAULT NULL,
-  `group` varchar(93) DEFAULT NULL,
-  `primary_boardid` varchar(12) DEFAULT NULL,
-  `marketprice_boardid` varchar(12) DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `secid` (`secid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
-
--- Data exporting was unselected.
-
 -- Dumping structure for table moex_db.main_table_search
 CREATE TABLE IF NOT EXISTS `main_table_search` (
   `id` bigint NOT NULL,
@@ -238,29 +214,6 @@ CREATE TABLE IF NOT EXISTS `securitytypes` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table moex_db.test_insert
-CREATE TABLE IF NOT EXISTS `test_insert` (
-  `id` bigint NOT NULL,
-  `secid` varchar(51) NOT NULL,
-  `shortname` varchar(189) DEFAULT NULL,
-  `regnumber` varchar(189) DEFAULT NULL,
-  `name` varchar(765) DEFAULT NULL,
-  `isin` varchar(51) DEFAULT NULL,
-  `is_traded` int DEFAULT NULL,
-  `emitent_id` int DEFAULT NULL,
-  `emitent_title` varchar(765) DEFAULT NULL,
-  `emitent_inn` varchar(30) DEFAULT NULL,
-  `emitent_okpo` varchar(24) DEFAULT NULL,
-  `gosreg` varchar(189) DEFAULT NULL,
-  `type` varchar(93) DEFAULT NULL,
-  `group` varchar(93) DEFAULT NULL,
-  `primary_boardid` varchar(12) DEFAULT NULL,
-  `marketprice_boardid` varchar(12) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `secid` (`secid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Data exporting was unselected.
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
